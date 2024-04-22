@@ -1,6 +1,7 @@
 import { connectDb } from "./src/db.config.js";
 import dotenv from 'dotenv';
 import  express  from "express";
+import cors from "cors"
 import  authRouter  from './src/routes/auth.js';
 import  categoryRouter  from "./src/routes/category.js";
 import productRouter from "./src/routes/product.js"
@@ -11,6 +12,7 @@ dotenv.config();
 const app = express();
 // middlewares
 app.use(express.json());
+app.use(cors(["http://localhost:5173", "http://localhost:5147"]))
 
 const port = process.env.PORT
 const dbUrl = process.env.MONGODB_URL 

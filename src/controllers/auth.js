@@ -112,7 +112,7 @@ export const login = async (req, res) => {
             expiresIn: 86400
         });
 
-        return res.json({success: true, message: "Login Successful" ,data: user , token});
+        return res.json({success: true, message: "Login Successful" , user , token});
     } catch (err) {
         console.log("Error creating registration", err.message);
         return res.status(500).json({message: "Registration failed", err});

@@ -1,5 +1,6 @@
-import slugify from "slugify";
+
 import Order from '../models/order.js'; // Assuming orderSchema is defined in a separate file
+import moment from 'moment';
 
 // export const createOrder = async (req, res) => {
 //     try {
@@ -176,41 +177,91 @@ export const deleteOrder = async (req, res) => {
 // };
 
 // Controller function to search orders by date or date range with pagination
-export const searchOrdersByDate = async (req, res) => {
-    const { startDate, endDate } = req.query;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+// export const searchOrdersByDate = async (req, res) => {
+//     const { startDate, endDate } = req.query;
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+//     const skip = (page - 1) * limit;
   
-    try {
-      let query = {};
+//     try {
+//       let query = {};
   
       // Check if both startDate and endDate parameters are provided
-      if (startDate && endDate) {
-        query.createdAt = {
-          $gte: new Date(startDate),
-          $lte: new Date(endDate)
-        };
-      } else if (startDate) {
+    //   if (startDate && endDate) {
+    //     query.createdAt = {
+    //       $gte: new Date(startDate),
+    //       $lte: new Date(endDate)
+    //     };
+    //   } else if (startDate) {
         // If only startDate is provided, search orders created on or after startDate
-        query.createdAt = { $gte: new Date(startDate) };
-      } else if (endDate) {
+    //     query.createdAt = { $gte: new Date(startDate) };
+    //   } else if (endDate) {
         // If only endDate is provided, search orders created on or before endDate
-        query.createdAt = { $lte: new Date(endDate) };
-      }
+    //     query.createdAt = { $lte: new Date(endDate) };
+    //   }
   
       // Search orders based on the constructed query
-      const orders = await Order.find(query).skip(skip).limit(limit);
-      const totalOrders = await Order.countDocuments(query);
+    //   const orders = await Order.find(query).skip(skip).limit(limit);
+    //   const totalOrders = await Order.countDocuments(query);
   
-      res.json({
-        currentPage: page,
-        ordersFound: totalOrders,
-        totalPages: Math.ceil(totalOrders / limit),
-        orders,
-      });
-    } catch (error) {
-      console.error('Error searching orders by date:', error);
-      res.status(500).json({ success: false, message: 'Failed to search orders', errorMsg: error.message });
+    //   res.json({
+    //     currentPage: page,
+    //     ordersFound: totalOrders,
+    //     totalPages: Math.ceil(totalOrders / limit),
+    //     orders,
+    //   });
+    // } catch (error) {
+    //   console.error('Error searching orders by date:', error);
+    //   res.status(500).json({ success: false, message: 'Failed to search orders', errorMsg: error.message });
+//     }
+//   };
+
+
+
+export const searchOrdersByDate = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    if (!startDate && !endDate) {
+      return res.status(400).json({ success: false, message: 'Start date or end date is required' });
     }
-  };
+
+    let query = {};
+
+    // Parse start date
+    if (startDate) {
+      const parsedStartDate = moment(startDate);
+      console.log(parsedStartDate);
+
+      if (!parsedStartDate.isValid()) {
+        return res.status(400).json({ success: false, message: 'Invalid start date format' });
+      }
+
+      query.createdAt = { $gte: parsedStartDate.toDate() };
+    }
+
+    // Parse end date
+    if (endDate) {
+      const parsedEndDate = moment(endDate);
+      console.log(parsedEndDate);
+
+      if (!parsedEndDate.isValid()) {
+        return res.status(400).json({ success: false, message: 'Invalid end date format' });
+      }
+  
+      // If both start date and end date are provided, add $lte condition
+      if (query.createdAt) {
+        query.createdAt.$lte = parsedEndDate.toDate();
+      } else {
+        query.createdAt = { $lte: parsedEndDate.toDate() };
+      }
+    }
+
+    const orders = await Order.find(query);
+
+    res.status(200).json({ success: true, orders });
+  } catch (error) {
+    console.error('Error searching orders by date:', error.message);
+    res.status(500).json({ success: false, message: 'Failed to search orders', errorMsg: error.message });
+  }
+};
