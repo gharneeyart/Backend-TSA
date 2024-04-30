@@ -15,9 +15,11 @@ const router = express.Router()
 // define your routes
 router.post('/login', login)
 router.post('/signup', upload.single('image'), signUp)// the 'image' is coming from whatever u call ur image in the user model
+
+// User routes
 router.get('/users', getAllUsers)
 router.get('/user/:userId', getOneUser)
-router.put('/update', isLoggedIn, upload.single("image"), updateUser)
+router.put('/user/update', isLoggedIn, upload.single("image"), updateUser)
 router.delete('/:userId', deleteUser)
 router.post("/user/role", isLoggedIn,  updateUserRole)
 

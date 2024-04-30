@@ -8,7 +8,7 @@ router.post('/create',isLoggedIn, isAdmin, createCategory)
 router.get('/categories', getAllCategory)
 router.get('/category/:categoryId', getOneCategory)
 router.get('/slug/:slug', getCategoryBySlug)
-router.put('/update/:categoryId', updateCategory)
+router.put('/update/:categoryId', isLoggedIn, isAdmin, updateCategory)
 router.delete('/:categoryId', deleteCategory)
 
 export default router;

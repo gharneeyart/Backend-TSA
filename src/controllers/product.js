@@ -9,7 +9,22 @@ import { request } from "express";
 // Function to create product
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, price, category, quantity } = req.body;
+    // const { name, description, price, category, quantity } = req.body;
+    const {
+      name,
+      description,
+      price,
+      category,
+      quantity,
+      gender,
+      usage,
+      about,
+      brand,
+      scentType,
+      scentProfile,
+      fragranceType,
+      size,
+    } = req.body;
     const imageFiles = req.files;
 
     if (!name || !description || !price || !category || !quantity) {
@@ -45,6 +60,14 @@ export const createProduct = async (req, res) => {
       category,
       quantity,
       images: uploadedImages,
+      gender,
+      usage,
+      about,
+      brand,
+      scentType,
+      scentProfile,
+      fragranceType,
+      size,
     });
 
     await newProduct.save();
@@ -332,14 +355,15 @@ export const processPayment = async (req, res) => {
     let newTransaction = {
       amount: total,
       paymentStatus: paymentRef,
-      buyer: req.user._id
+      
     }
     // If payment is successful create new order
     if (newTransaction.paymentStatus === true) {
       // create new order
       const order = new Order({
-        products: cartItems,
+        products: orderedProducts,
         payment: newTransaction,
+        buyer: req.user._id,
         totalAmount: newTransaction.amount
       })
 
@@ -348,6 +372,7 @@ export const processPayment = async (req, res) => {
       return res.json({success: true, message: "Order created successfully", order});
     }else {
       console.log("Payment failed,no order created");
+      return res.json({ success: false, message: "Payment failed, order not created" });
     }
   } catch (err) {
     console.error("Payment failed and order not processed", err.message);

@@ -34,15 +34,18 @@ const userSchema = new Schema(
             type: Number,
             default: 0,
         },
-        address:{
+        isAdmin: {
+            type: Boolean,
+            default: false,
+        },
+        address: {
             type: Object,
             default: {
-                street: '1',
-                city: '',
-                state: '',
-                zip: '',
-                country: ''
-            }
+                street: "1 Ogunlesi street",
+                city: "Onipanu",
+                state: "Lagos",
+                zip: 123456
+            },
         },
         OTP: {
             type: String,

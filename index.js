@@ -12,7 +12,11 @@ dotenv.config();
 const app = express();
 // middlewares
 app.use(express.json());
-app.use(cors(["http://localhost:5173", "http://localhost:5147"]))
+
+let corsOptions = { 
+    origin : ['http://localhost:5173', 'http://localhost:5174', 'https://fragrance-hub-eight.vercel.app'], 
+} 
+app.use(cors(corsOptions));
 
 const port = process.env.PORT
 const dbUrl = process.env.MONGODB_URL 

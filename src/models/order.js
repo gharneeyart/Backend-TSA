@@ -71,11 +71,11 @@ const orderSchema = new Schema(
       },
       totalAmount: {
         type: Number,
-      },
-      date: {
-        type: Date,
-        default: Date.now
       }
+      // date: {
+      //   type: Date,
+      //   default: Date.now
+      // }
     },
     { timestamps: true }
   );

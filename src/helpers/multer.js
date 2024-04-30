@@ -15,9 +15,9 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         allowedFormats: ['jpg', 'png', 'gif', 'jpeg', 'svg'],
-        transformation:[
-            {width: 300, height: 300, crop: 'fill', gravity: 'face', quality:'auto'}
-        ]
+        // transformation:[
+        //     {width: 300, height: 300, crop: 'fill', gravity: 'face', quality:'auto'}
+        // ]
     }
 });
 

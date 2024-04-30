@@ -67,7 +67,7 @@ export const createOrder = async (
     }
   };
   
-
+// Controller function to update order status by orderId
 export const orderStatus = async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -139,7 +139,7 @@ export const getOrderById = async (req, res) => {
         return res.status(500).json({success: false, message: err.message})
     }
 };
-// deleteOrder
+// deleteOrder by orderId
 export const deleteOrder = async (req, res) => {
     try {
         const { orderId } = req.params;

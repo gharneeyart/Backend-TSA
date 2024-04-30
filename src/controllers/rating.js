@@ -72,3 +72,73 @@ export const rateProduct = async (req, res) => {
     });
   }
 };
+
+export const getAllRatingsOfAProduct = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const ratings = await Rating.find({ product: productId })
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: 'product',
+        select: 'avgRating',
+      });
+
+    const totalRatingCount = await Rating.countDocuments({ product: productId });
+
+    const totalPages = Math.ceil(totalRatingCount / limit);
+
+    return res.status(200).json({
+      success: true,
+      limit,
+      totalPages,
+      ratingCount: totalRatingCount,
+      ratings,
+    });
+  } catch (error) {
+    console.error("Error fetching ratings:", error.message);
+    res.status(500).json({ success: false, message: "Failed to fetch ratings", error: error.message });
+  }
+};
+
+
+
+export const getRatingById = async (req, res) => {
+  try {
+    const { ratingId } = req.params;
+    
+    const rating = await Rating.findById(ratingId).populate('user', 'username'); // Example: Populate user details
+    
+    if (!rating) {
+      return res.status(404).json({ success: false, message: "Rating not found" });
+    }
+
+    return res.status(200).json({ success: true, rating });
+  } catch (error) {
+    console.error("Error fetching rating:", error.message);
+    res.status(500).json({ success: false, message: "Failed to fetch rating", error: error.message });
+  }
+};
+
+
+
+export const deleteRating = async (req, res) => {
+  try {
+    const { ratingId } = req.params;
+    
+    const deletedRating = await Rating.findByIdAndDelete(ratingId);
+    
+    if (!deletedRating) {
+      return res.status(404).json({ success: false, message: "Rating not found" });
+    }
+
+    return res.status(200).json({ success: true, message: `Rating ${ratingId} deleted successfully` });
+  } catch (error) {
+    console.error("Error deleting rating:", error.message);
+    res.status(500).json({ success: false, message: "Failed to delete rating", error: error.message });
+  }
+};
